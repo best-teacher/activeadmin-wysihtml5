@@ -120,7 +120,7 @@
         initUploader = ->
           uploader = new qq.FileUploader
             element: $uploader.get(0)
-            action: '/admin/assets.json'
+            action: '/guppy/assets.json'
             onComplete: ->
               refreshAssets()
               $tab_handles.eq(1).click()

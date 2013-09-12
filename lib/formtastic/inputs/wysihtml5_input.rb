@@ -5,7 +5,7 @@ module Formtastic
       COMMANDS_PRESET = {
         barebone: [ :bold, :italic, :link, :source ],
         basic: [ :bold, :italic, :ul, :ol, :link, :image, :source ],
-        all: [ :bold, :italic, :underline, :ul, :ol, :outdent, :indent, :link, :image, :source ]
+        all: [ :bold, :italic, :underline, :color_red, :ul, :ol, :outdent, :indent, :link, :image, :source ]
       }
 
       BLOCKS_PRESET = {
@@ -20,6 +20,10 @@ module Formtastic
         medium: 170,
         large: 350,
         huge: 450
+      }
+
+      VALUES_PRESET = {
+        basic: [ :red, :blue, :green ]
       }
 
       def toolbar_blocks
@@ -55,7 +59,7 @@ module Formtastic
 
       def toolbar_commands
         command_groups = [
-          [ :bold, :italic, :underline ],
+          [ :bold, :italic, :underline, :color_red ],
           [ :ul, :ol, :outdent, :indent ],
           [ :link ],
           [ :image ],
@@ -66,12 +70,17 @@ module Formtastic
           image: 'insertImage',
           ul: 'insertUnorderedList',
           ol: 'insertOrderedList',
-          source: 'change_view'
+          source: 'change_view',
+          color_red: 'foreColor'
         }
 
         toolbar_commands = options[:commands] || input_html_options[:commands] || :basic
+        toolbar_values = options[:vlaues] || input_html_options[:commands] || :basic
         if !toolbar_commands.is_a? Array
           toolbar_commands = COMMANDS_PRESET[toolbar_commands.to_sym]
+        end
+        if !toolbar_values.is_a? Array
+          toolbar_values = VALUES_PRESET[toolbar_values.to_sym]
         end
 
         command_groups.map do |group|
@@ -79,15 +88,38 @@ module Formtastic
           group.each do |command|
             if toolbar_commands.include? command
               wysihtml5_command = command_mapper[command.to_sym] || command.to_s
-              title = I18n.t("wysihtml5.command.#{command}", default: command.to_s.titleize)
-              commands << template.content_tag(
-                :a,
-                href: "javascript:void(0)",
-                class: "editor-command #{command}",
-                title: title,
-                data: (command == :source ? {wysihtml5_action: wysihtml5_command} : { wysihtml5_command: wysihtml5_command })
-              ) do
-                template.content_tag(:span, title)
+              if command == :color
+                toolbar_values.each do |value|
+                  title = I18n.t("wysihtml5.command.#{command}.#{value}", default: value.to_s.titleize)
+                  commands << template.content_tag(
+                    :a,
+                    href: "javascript:void(0)",
+                    class: "editor-command #{command} #{value}",
+                    title: title,
+                    data: { wysihtml5_command: wysihtml5_command, wysihtml5_value: value }
+                  ) do
+                    template.content_tag(:span, title)
+                  end
+                end
+              else
+                if [:color_red].include?(command)
+                  value = command.to_s.split('_')[1]
+                  data = {wysihtml5_command: wysihtml5_command, wysihtml5_command_value: value}
+                elsif command == :source
+                  data = {wysihtml5_action: wysihtml5_command}
+                else
+                  data = {wysihtml5_command: wysihtml5_command}
+                end
+                title = I18n.t("wysihtml5.command.#{command}", default: command.to_s.titleize)
+                commands << template.content_tag(
+                  :a,
+                  href: "javascript:void(0)",
+                  class: "editor-command #{command}",
+                  title: title,
+                  data: data
+                ) do
+                  template.content_tag(:span, title)
+                end
               end
             end
           end
