@@ -34,6 +34,14 @@
   font-size: xx-small;
 }
 
+.wysiwyg-color-orange {
+  color: orange;
+}
+
+.wysiwyg-color-pink {
+  color: pink;
+}
+
 .wysiwyg-color-black {
   color: black;
 }

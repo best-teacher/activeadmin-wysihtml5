@@ -5,7 +5,7 @@ module Formtastic
       COMMANDS_PRESET = {
         barebone: [ :bold, :italic, :link, :source ],
         basic: [ :bold, :italic, :ul, :ol, :link, :image, :source ],
-        all: [ :bold, :italic, :underline, :color_red, :color_blue, :color_green, :ul, :ol, :outdent, :indent, :link, :image, :source ]
+        all: [ :bold, :italic, :underline, :color_red, :color_blue, :color_green, :color_orange, :color_pink, :ul, :ol, :outdent, :indent, :link, :image, :source ]
       }
 
       BLOCKS_PRESET = {
@@ -59,7 +59,7 @@ module Formtastic
 
       def toolbar_commands
         command_groups = [
-          [ :bold, :italic, :underline, :color_red, :color_blue, :color_green ],
+          [ :bold, :italic, :underline, :color_red, :color_blue, :color_green, :color_orange, :color_pink ],
           [ :ul, :ol, :outdent, :indent ],
           [ :link ],
           [ :image ],
@@ -73,7 +73,9 @@ module Formtastic
           source: 'change_view',
           color_red: 'foreColor',
           color_blue: 'foreColor',
-          color_green: 'foreColor'
+          color_green: 'foreColor',
+          color_orange: 'foreColor',
+          color_pink: 'foreColor'
         }
 
         toolbar_commands = options[:commands] || input_html_options[:commands] || :basic
@@ -104,7 +106,7 @@ module Formtastic
                   end
                 end
               else
-                if [:color_red, :color_blue, :color_green].include?(command)
+                if [:color_red, :color_blue, :color_green, :color_orange, :color_pink].include?(command)
                   value = command.to_s.split('_')[1]
                   data = {wysihtml5_command: wysihtml5_command, wysihtml5_command_value: value}
                 elsif command == :source
